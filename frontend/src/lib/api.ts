@@ -75,11 +75,14 @@ export interface VatDetail {
 export interface Product {
   id: string;
   sku: string;
+  barcode?: string;
   name: string;
   price: number;
   vatRate: string;
   category: string;
   isActive: boolean;
+  trackInventory?: boolean;
+  stockQuantity?: number;
 }
 
 export interface DailyStats {
