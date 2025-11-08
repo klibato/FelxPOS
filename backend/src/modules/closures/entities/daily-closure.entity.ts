@@ -61,13 +61,43 @@ export class DailyClosure {
   totalVoids: number;
 
   // Totaux financiers
-  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0, name: 'total_ht' })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    default: 0,
+    name: 'total_ht',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   totalHt: number;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0, name: 'total_vat' })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    default: 0,
+    name: 'total_vat',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   totalVat: number;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0, name: 'total_ttc' })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    default: 0,
+    name: 'total_ttc',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   totalTtc: number;
 
   // Répartitions

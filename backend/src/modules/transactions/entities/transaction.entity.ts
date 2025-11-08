@@ -67,13 +67,40 @@ export class Transaction {
   status: string;
 
   // Montants
-  @Column({ type: 'decimal', precision: 12, scale: 2, name: 'total_ht' })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    name: 'total_ht',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   totalHt: number;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2, name: 'total_vat' })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    name: 'total_vat',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   totalVat: number;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2, name: 'total_ttc' })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    name: 'total_ttc',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   totalTtc: number;
 
   // Détails (JSON)
