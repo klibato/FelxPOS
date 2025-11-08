@@ -10,6 +10,16 @@ import { Operator } from './modules/operators/entities/operator.entity';
 import { Transaction } from './modules/transactions/entities/transaction.entity';
 import { DailyClosure } from './modules/closures/entities/daily-closure.entity';
 import { AuditLog } from './modules/audit/entities/audit-log.entity';
+import { Product } from './modules/products/entities/product.entity';
+import { Category } from './modules/categories/entities/category.entity';
+
+// Modules
+import { ProductsModule } from './modules/products/products.module';
+import { OperatorsModule } from './modules/operators/operators.module';
+import { CashRegistersModule } from './modules/cash-registers/cash-registers.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { TenantsModule } from './modules/tenants/tenants.module';
+import { StatsModule } from './modules/stats/stats.module';
 
 // Services
 import { TransactionsService } from './modules/transactions/transactions.service';
@@ -47,6 +57,8 @@ import { FECService } from './modules/exports/fec.service';
           Transaction,
           DailyClosure,
           AuditLog,
+          Product,
+          Category,
         ],
         synchronize: configService.get('DB_SYNCHRONIZE') === 'true',
         logging: configService.get('DB_LOGGING') === 'true',
@@ -69,6 +81,14 @@ import { FECService } from './modules/exports/fec.service';
       DailyClosure,
       AuditLog,
     ]),
+
+    // API Modules
+    ProductsModule,
+    OperatorsModule,
+    CashRegistersModule,
+    CategoriesModule,
+    TenantsModule,
+    StatsModule,
   ],
   providers: [
     // Services
