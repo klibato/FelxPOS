@@ -184,7 +184,7 @@ export default function DashboardPage() {
             <CardContent>
               <div className="text-2xl font-bold">
                 {formatCurrency(
-                  stats?.totalSales > 0 ? (stats?.totalRevenue || 0) / stats.totalSales : 0
+                  (stats?.totalSales ?? 0) > 0 ? (stats?.totalRevenue || 0) / (stats?.totalSales ?? 1) : 0
                 )}
               </div>
               <p className="text-xs text-muted-foreground">Par transaction</p>
