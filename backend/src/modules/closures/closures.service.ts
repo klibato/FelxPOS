@@ -115,7 +115,6 @@ export class ClosuresService {
       console.error('Erreur lors de l\'archivage:', error);
       this.auditService.logError({
         tenantId,
-        eventType: 'ARCHIVE_ERROR',
         error: error.message,
         metadata: { closureId: saved.id },
       });
