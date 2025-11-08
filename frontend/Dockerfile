@@ -16,6 +16,16 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
+# Build arguments pour les variables d'environnement Next.js (NEXT_PUBLIC_*)
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+# Les convertir en variables d'environnement pour le build
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+
 RUN npm run build
 
 # Production image, copy all the files and run next

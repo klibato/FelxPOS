@@ -5,6 +5,10 @@
 
 set -e
 
+# Vérifier l'environnement d'abord
+echo "Vérification de l'environnement..."
+./check-env.sh || exit 1
+
 echo "=========================================="
 echo "Nettoyage complet Docker pour FelxPOS"
 echo "=========================================="
