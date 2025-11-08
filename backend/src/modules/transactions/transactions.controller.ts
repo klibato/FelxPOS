@@ -9,19 +9,26 @@ export class TransactionsController {
   @Post()
   create(@Request() req, @Body() createTransactionDto: CreateTransactionDto) {
     const tenantId = req.user?.tenantId || req.headers['x-tenant-id'];
-    return this.transactionsService.createTransaction(tenantId, createTransactionDto);
+    const registerId = createTransactionDto.registerId || req.user?.registerId;
+    const operatorId = createTransactionDto.operatorId || req.user?.id;
+    return this.transactionsService.createTransaction(createTransactionDto, tenantId, registerId, operatorId);
   }
 
   @Get()
   findAll(@Request() req, @Query('date') date?: string, @Query('registerId') registerId?: string) {
     const tenantId = req.user?.tenantId || req.headers['x-tenant-id'];
-    return this.transactionsService.findAll(tenantId, { date, registerId });
+    if (date) {
+      const targetDate = new Date(date);
+      return this.transactionsService.findToday(tenantId, registerId);
+    }
+    // Default to today's transactions
+    return this.transactionsService.findToday(tenantId, registerId);
   }
 
   @Get(':uuid')
   findOne(@Request() req, @Param('uuid') uuid: string) {
     const tenantId = req.user?.tenantId || req.headers['x-tenant-id'];
-    return this.transactionsService.findOne(tenantId, uuid);
+    return this.transactionsService.findOne(uuid, tenantId);
   }
 
   @Get('verify-hash-chain')

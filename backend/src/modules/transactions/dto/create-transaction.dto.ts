@@ -65,4 +65,14 @@ export class CreateTransactionDto {
   @ApiPropertyOptional()
   @IsOptional()
   metadata?: Record<string, any>;
+
+  @ApiPropertyOptional({ example: '12345678-1234-1234-1234-123456789012' })
+  @IsOptional()
+  @IsString()
+  registerId?: string;
+
+  @ApiPropertyOptional({ example: '12345678-1234-1234-1234-123456789012' })
+  @IsOptional()
+  @IsString()
+  operatorId?: string;
 }

@@ -9,10 +9,12 @@ export class ClosuresController {
   @Post()
   create(@Request() req, @Body() createClosureDto: CreateClosureDto) {
     const tenantId = req.user?.tenantId || req.headers['x-tenant-id'];
-    return this.closuresService.createDailyClosure(
+    const operatorId = req.user?.id || req.body.operatorId;
+    return this.closuresService.performDailyClosure(
       tenantId,
       createClosureDto.registerId,
       new Date(createClosureDto.date),
+      operatorId,
     );
   }
 
@@ -25,6 +27,6 @@ export class ClosuresController {
   @Get(':id')
   findOne(@Request() req, @Param('id') id: string) {
     const tenantId = req.user?.tenantId || req.headers['x-tenant-id'];
-    return this.closuresService.findOne(tenantId, id);
+    return this.closuresService.findOne(id, tenantId);
   }
 }

@@ -8,6 +8,13 @@ export class AuditController {
   @Get('anomalies')
   getAnomalies(@Request() req) {
     const tenantId = req.user?.tenantId || req.headers['x-tenant-id'];
-    return this.auditService.detectAnomalies(tenantId);
+    // Return audit logs filtered by anomaly-related event types
+    return this.auditService.findByEventType(tenantId, 'HASH_VERIFICATION_FAILED');
+  }
+
+  @Get()
+  findAll(@Request() req) {
+    const tenantId = req.user?.tenantId || req.headers['x-tenant-id'];
+    return this.auditService.findAll(tenantId);
   }
 }
