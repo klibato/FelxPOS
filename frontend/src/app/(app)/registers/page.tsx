@@ -144,7 +144,7 @@ export default function RegistersPage() {
       </div>
 
       <RegisterDialog
-        register={selectedRegister}
+        register_={selectedRegister}
         open={dialogOpen}
         onOpenChange={(open) => {
           setDialogOpen(open)
