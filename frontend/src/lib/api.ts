@@ -48,6 +48,8 @@ export interface Transaction {
   uuid: string;
   receiptNumber: string;
   transactionDate: string;
+  transactionType?: string;
+  status: 'pending' | 'completed' | 'cancelled';
   totalHt: number;
   totalVat: number;
   totalTtc: number;
