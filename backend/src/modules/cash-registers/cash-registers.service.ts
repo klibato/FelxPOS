@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CashRegister } from './entities/cash-register.entity';
@@ -53,6 +53,17 @@ export class CashRegistersService {
 
   async remove(tenantId: string, id: string): Promise<void> {
     const cashRegister = await this.findOne(tenantId, id);
-    await this.cashRegistersRepository.remove(cashRegister);
+
+    try {
+      await this.cashRegistersRepository.remove(cashRegister);
+    } catch (error) {
+      // Catch foreign key constraint violations (NF525 compliance)
+      if (error.code === '23503') {
+        throw new BadRequestException(
+          'Impossible de supprimer cette caisse : elle est référencée dans des transactions ou clôtures (conformité NF525)',
+        );
+      }
+      throw error;
+    }
   }
 }
