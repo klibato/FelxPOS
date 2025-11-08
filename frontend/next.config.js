@@ -4,11 +4,6 @@ const nextConfig = {
   swcMinify: true,
   output: 'standalone',
 
-  // PWA Configuration
-  experimental: {
-    appDir: true,
-  },
-
   // Images optimization
   images: {
     domains: ['localhost'],
