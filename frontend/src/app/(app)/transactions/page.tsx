@@ -1,62 +1,39 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Filter, Download, Eye, Calendar } from 'lucide-react'
+import { Search, Filter, Download, Eye, Calendar, Receipt } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { useTransactions } from '@/hooks/useTransactions'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 export default function TransactionsPage() {
   const [search, setSearch] = useState('')
 
-  // Mock data
-  const transactions = [
-    {
-      id: 1,
-      receiptNumber: 'T-2025-001234',
-      date: '2025-01-15 14:30:25',
-      cashRegister: 'Caisse 1',
-      operator: 'Marie Dupont',
-      items: 3,
-      totalHt: 15.45,
-      totalVat: 1.85,
-      totalTtc: 17.30,
-      paymentMethod: 'CB',
-      hash: 'a3f5...8c2d',
-    },
-    {
-      id: 2,
-      receiptNumber: 'T-2025-001235',
-      date: '2025-01-15 14:35:10',
-      cashRegister: 'Caisse 1',
-      operator: 'Marie Dupont',
-      items: 1,
-      totalHt: 2.27,
-      totalVat: 0.23,
-      totalTtc: 2.50,
-      paymentMethod: 'Espèces',
-      hash: 'b7d9...1f4a',
-    },
-    {
-      id: 3,
-      receiptNumber: 'T-2025-001236',
-      date: '2025-01-15 14:42:55',
-      cashRegister: 'Caisse 2',
-      operator: 'Jean Martin',
-      items: 5,
-      totalHt: 28.18,
-      totalVat: 3.42,
-      totalTtc: 31.60,
-      paymentMethod: 'CB',
-      hash: 'c9e2...3b7f',
-    },
-  ]
+  const { data: transactions = [], isLoading } = useTransactions()
+
+  const filteredTransactions = transactions.filter((t) =>
+    t.receiptNumber?.toLowerCase().includes(search.toLowerCase())
+  )
 
   const stats = {
     today: transactions.length,
     totalAmount: transactions.reduce((acc, t) => acc + t.totalTtc, 0),
-    averageTicket: transactions.reduce((acc, t) => acc + t.totalTtc, 0) / transactions.length,
-    cbPayments: transactions.filter((t) => t.paymentMethod === 'CB').length,
+    averageTicket:
+      transactions.length > 0
+        ? transactions.reduce((acc, t) => acc + t.totalTtc, 0) / transactions.length
+        : 0,
+    cbPayments: transactions.filter((t) => t.paymentMethod === 'card').length,
+    cashPayments: transactions.filter((t) => t.paymentMethod === 'cash').length,
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground">Chargement...</p>
+      </div>
+    )
   }
 
   return (
@@ -79,7 +56,8 @@ export default function TransactionsPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Transactions du jour</CardTitle>
+            <CardTitle className="text-sm font-medium">Transactions</CardTitle>
+            <Receipt className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.today}</div>
@@ -92,7 +70,7 @@ export default function TransactionsPage() {
             <CardTitle className="text-sm font-medium">Montant total</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalAmount.toFixed(2)} €</div>
+            <div className="text-2xl font-bold">{formatCurrency(stats.totalAmount)}</div>
             <p className="text-xs text-muted-foreground">chiffre d'affaires</p>
           </CardContent>
         </Card>
@@ -102,7 +80,7 @@ export default function TransactionsPage() {
             <CardTitle className="text-sm font-medium">Ticket moyen</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.averageTicket.toFixed(2)} €</div>
+            <div className="text-2xl font-bold">{formatCurrency(stats.averageTicket)}</div>
             <p className="text-xs text-muted-foreground">par transaction</p>
           </CardContent>
         </Card>
@@ -113,9 +91,11 @@ export default function TransactionsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {((stats.cbPayments / stats.today) * 100).toFixed(0)}%
+              {stats.today > 0 ? ((stats.cbPayments / stats.today) * 100).toFixed(0) : 0}%
             </div>
-            <p className="text-xs text-muted-foreground">{stats.cbPayments} transactions</p>
+            <p className="text-xs text-muted-foreground">
+              {stats.cbPayments} CB / {stats.cashPayments} Espèces
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -133,14 +113,6 @@ export default function TransactionsPage() {
                 className="pl-10"
               />
             </div>
-            <button className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm hover:bg-accent">
-              <Calendar className="h-4 w-4" />
-              Période
-            </button>
-            <button className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm hover:bg-accent">
-              <Filter className="h-4 w-4" />
-              Filtres
-            </button>
           </div>
         </CardContent>
       </Card>
@@ -154,50 +126,75 @@ export default function TransactionsPage() {
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-medium">N° Ticket</th>
                   <th className="px-4 py-3 text-left text-sm font-medium">Date/Heure</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium">Caisse</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium">Opérateur</th>
                   <th className="px-4 py-3 text-center text-sm font-medium">Articles</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium">Total HT</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium">TVA</th>
                   <th className="px-4 py-3 text-right text-sm font-medium">Total TTC</th>
                   <th className="px-4 py-3 text-center text-sm font-medium">Paiement</th>
                   <th className="px-4 py-3 text-center text-sm font-medium">Hash NF525</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium">Actions</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium">Statut</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {transactions.map((transaction) => (
-                  <tr key={transaction.id} className="hover:bg-muted/50">
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-primary">{transaction.receiptNumber}</div>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-muted-foreground">
-                      {transaction.date}
-                    </td>
-                    <td className="px-4 py-3 text-sm">{transaction.cashRegister}</td>
-                    <td className="px-4 py-3 text-sm">{transaction.operator}</td>
-                    <td className="px-4 py-3 text-center text-sm">
-                      {transaction.items}
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium">
-                      {transaction.totalTtc.toFixed(2)} €
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <Badge variant="outline">{transaction.paymentMethod}</Badge>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <code className="text-xs text-muted-foreground">{transaction.hash}</code>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-2">
-                        <button className="rounded p-1 hover:bg-accent" title="Voir détails">
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button className="rounded p-1 hover:bg-accent" title="Télécharger ticket">
-                          <Download className="h-4 w-4" />
-                        </button>
-                      </div>
+                {filteredTransactions.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">
+                      Aucune transaction trouvée
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredTransactions.map((transaction) => (
+                    <tr key={transaction.id} className="hover:bg-muted/50">
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-primary">
+                          {transaction.receiptNumber}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-muted-foreground">
+                        {formatDate(transaction.transactionDate)}
+                      </td>
+                      <td className="px-4 py-3 text-center text-sm">
+                        {Array.isArray(transaction.items) ? transaction.items.length : 0}
+                      </td>
+                      <td className="px-4 py-3 text-right text-sm">
+                        {formatCurrency(transaction.totalHt)}
+                      </td>
+                      <td className="px-4 py-3 text-right text-sm">
+                        {formatCurrency(transaction.totalVat)}
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium">
+                        {formatCurrency(transaction.totalTtc)}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <Badge variant="outline" className="capitalize">
+                          {transaction.paymentMethod === 'card' ? 'CB' : 'Espèces'}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <code className="text-xs text-muted-foreground">
+                          {transaction.currentHash?.substring(0, 8)}...
+                        </code>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <Badge
+                          variant={
+                            transaction.status === 'completed'
+                              ? 'default'
+                              : transaction.status === 'cancelled'
+                              ? 'destructive'
+                              : 'secondary'
+                          }
+                        >
+                          {transaction.status === 'completed'
+                            ? 'Complété'
+                            : transaction.status === 'cancelled'
+                            ? 'Annulé'
+                            : 'En attente'}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
