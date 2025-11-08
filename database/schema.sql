@@ -455,11 +455,7 @@ SELECT
     SUM(CASE WHEN transaction_type = 'refund' THEN 1 ELSE 0 END) as refund_count,
     SUM(total_ht) as total_ht,
     SUM(total_vat) as total_vat,
-    SUM(total_ttc) as total_ttc,
-    jsonb_object_agg(
-        payment_method,
-        COUNT(*)
-    ) FILTER (WHERE payment_method IS NOT NULL) as payment_methods
+    SUM(total_ttc) as total_ttc
 FROM transactions
 GROUP BY tenant_id, register_id, DATE(transaction_date);
 
