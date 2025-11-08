@@ -156,3 +156,89 @@ export const auditApi = {
   getAnomalies: () =>
     api.get<Array<{ message: string; severity: 'warning' | 'error' }>>('/audit/anomalies'),
 };
+
+// Operators API
+export interface Operator {
+  id: string;
+  name: string;
+  email: string;
+  role: 'manager' | 'cashier' | 'admin';
+  isActive: boolean;
+  lastActivity?: string;
+}
+
+export const operatorsApi = {
+  list: () => api.get<Operator[]>('/operators'),
+  create: (data: Partial<Operator>) => api.post<Operator>('/operators', data),
+  update: (id: string, data: Partial<Operator>) => api.patch<Operator>(`/operators/${id}`, data),
+  delete: (id: string) => api.delete(`/operators/${id}`),
+};
+
+// Registers API
+export interface CashRegister {
+  id: string;
+  name: string;
+  location: string;
+  isActive: boolean;
+  lastActivity?: string;
+}
+
+export const registersApi = {
+  list: () => api.get<CashRegister[]>('/registers'),
+  create: (data: Partial<CashRegister>) => api.post<CashRegister>('/registers', data),
+  update: (id: string, data: Partial<CashRegister>) => api.patch<CashRegister>(`/registers/${id}`, data),
+  delete: (id: string) => api.delete(`/registers/${id}`),
+};
+
+// Categories API
+export interface Category {
+  id: string;
+  name: string;
+  color?: string;
+  icon?: string;
+}
+
+export const categoriesApi = {
+  list: () => api.get<Category[]>('/categories'),
+  create: (data: Partial<Category>) => api.post<Category>('/categories', data),
+  update: (id: string, data: Partial<Category>) => api.patch<Category>(`/categories/${id}`, data),
+  delete: (id: string) => api.delete(`/categories/${id}`),
+};
+
+// Tenant/Settings API
+export const tenantsApi = {
+  getCurrent: () => api.get<Tenant>('/tenants/current'),
+  update: (data: Partial<Tenant>) => api.patch<Tenant>('/tenants/current', data),
+};
+
+// FEC Export API
+export interface FECExport {
+  id: string;
+  startDate: string;
+  endDate: string;
+  year: number;
+  createdAt: string;
+  downloadUrl?: string;
+}
+
+export const fecApi = {
+  generate: (data: { startDate: string; endDate: string; year: number }) =>
+    api.post<FECExport>('/fec/generate', data),
+  list: () => api.get<FECExport[]>('/fec'),
+  download: (id: string) => api.get(`/fec/${id}/download`, { responseType: 'blob' }),
+};
+
+// Archives API
+export interface Archive {
+  id: string;
+  date: string;
+  type: string;
+  size: number;
+  url: string;
+  hash: string;
+}
+
+export const archivesApi = {
+  list: (params?: { startDate?: string; endDate?: string }) =>
+    api.get<Archive[]>('/archives', { params }),
+};

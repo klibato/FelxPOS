@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
@@ -20,6 +20,8 @@ import {
   Download
 } from 'lucide-react'
 import { useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { toast } from 'sonner'
 
 interface NavItem {
   title: string
@@ -88,7 +90,21 @@ const navigation: NavItem[] = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+      toast.success('Déconnexion réussie')
+      router.push('/login')
+      router.refresh()
+    } catch (error: any) {
+      toast.error('Erreur lors de la déconnexion', {
+        description: error.message,
+      })
+    }
+  }
 
   return (
     <div
@@ -151,6 +167,7 @@ export function Sidebar() {
       {/* Footer */}
       <div className="border-t p-2">
         <button
+          onClick={handleLogout}
           className={cn(
             'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground',
             collapsed && 'justify-center'
