@@ -93,12 +93,15 @@ RETURNS TRIGGER AS $$
 DECLARE
     next_number BIGINT;
 BEGIN
+    -- Utiliser un verrou consultatif pour éviter les conditions de course
+    -- Le verrou est automatiquement libéré à la fin de la transaction
+    PERFORM pg_advisory_xact_lock(hashtext(NEW.tenant_id::text || '_tx_number'));
+
     -- Obtenir le prochain numéro pour ce tenant
     SELECT COALESCE(MAX(transaction_number), 0) + 1
     INTO next_number
     FROM transactions
-    WHERE tenant_id = NEW.tenant_id
-    FOR UPDATE;
+    WHERE tenant_id = NEW.tenant_id;
 
     NEW.transaction_number := next_number;
 
