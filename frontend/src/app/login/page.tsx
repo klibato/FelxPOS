@@ -102,10 +102,16 @@ export default function LoginPage() {
             )}
           </button>
 
-          <div className="text-center text-sm text-muted-foreground">
-            <p>Compte de test :</p>
-            <p className="mt-1 font-mono text-xs">
-              admin@felxpos.fr / admin123
+          <div className="rounded-md border border-yellow-200 bg-yellow-50 p-4 text-center text-sm dark:border-yellow-900 dark:bg-yellow-950">
+            <p className="font-medium text-yellow-800 dark:text-yellow-200">
+              Configuration requise
+            </p>
+            <p className="mt-2 text-xs text-yellow-700 dark:text-yellow-300">
+              Pour vous connecter, créez d'abord un compte utilisateur dans votre instance Supabase
+              avec l'email et le mot de passe souhaités.
+            </p>
+            <p className="mt-2 text-xs text-yellow-700 dark:text-yellow-300">
+              Les utilisateurs sont gérés via Supabase Auth (NEXT_PUBLIC_SUPABASE_URL).
             </p>
           </div>
         </form>
