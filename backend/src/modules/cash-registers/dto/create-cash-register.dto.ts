@@ -1,15 +1,16 @@
 import { IsString, IsBoolean, IsOptional } from 'class-validator';
 
 export class CreateCashRegisterDto {
+  @IsOptional()
   @IsString()
-  registerCode: string;
-
-  @IsString()
-  serialNumber: string;
+  registerCode?: string;
 
   @IsOptional()
   @IsString()
-  name?: string;
+  serialNumber?: string;
+
+  @IsString()
+  name: string;
 
   @IsOptional()
   @IsString()

@@ -13,8 +13,14 @@ export class CashRegistersService {
   ) {}
 
   async create(tenantId: string, createCashRegisterDto: CreateCashRegisterDto): Promise<CashRegister> {
+    // Generate registerCode and serialNumber if not provided
+    const registerCode = createCashRegisterDto.registerCode || `REG-${Date.now()}`;
+    const serialNumber = createCashRegisterDto.serialNumber || `SN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
     const cashRegister = this.cashRegistersRepository.create({
       ...createCashRegisterDto,
+      registerCode,
+      serialNumber,
       tenantId,
     });
     return this.cashRegistersRepository.save(cashRegister);

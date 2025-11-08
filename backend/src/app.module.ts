@@ -20,11 +20,11 @@ import { CashRegistersModule } from './modules/cash-registers/cash-registers.mod
 import { CategoriesModule } from './modules/categories/categories.module';
 import { TenantsModule } from './modules/tenants/tenants.module';
 import { StatsModule } from './modules/stats/stats.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
+import { ClosuresModule } from './modules/closures/closures.module';
+import { AuditModule } from './modules/audit/audit.module';
 
-// Services
-import { TransactionsService } from './modules/transactions/transactions.service';
-import { ClosuresService } from './modules/closures/closures.service';
-import { AuditService } from './modules/audit/audit.service';
+// Services (standalone)
 import { ArchiveService } from './modules/archive/archive.service';
 import { ReceiptsService } from './modules/receipts/receipts.service';
 import { FECService } from './modules/exports/fec.service';
@@ -89,12 +89,12 @@ import { FECService } from './modules/exports/fec.service';
     CategoriesModule,
     TenantsModule,
     StatsModule,
+    TransactionsModule,
+    ClosuresModule,
+    AuditModule,
   ],
   providers: [
-    // Services
-    TransactionsService,
-    ClosuresService,
-    AuditService,
+    // Standalone Services
     ArchiveService,
     ReceiptsService,
     FECService,
