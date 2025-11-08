@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Operator } from './entities/operator.entity';
@@ -47,6 +47,17 @@ export class OperatorsService {
 
   async remove(tenantId: string, id: string): Promise<void> {
     const operator = await this.findOne(tenantId, id);
-    await this.operatorsRepository.remove(operator);
+
+    try {
+      await this.operatorsRepository.remove(operator);
+    } catch (error) {
+      // Catch foreign key constraint violations (NF525 compliance)
+      if (error.code === '23503') {
+        throw new BadRequestException(
+          'Impossible de supprimer cet opérateur : il est référencé dans des transactions, clôtures ou logs d\'audit (conformité NF525)',
+        );
+      }
+      throw error;
+    }
   }
 }
